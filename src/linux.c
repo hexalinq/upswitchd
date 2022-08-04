@@ -70,7 +70,7 @@ interface_t* OpenInterface(const char* sInterface) {
 	if(_GetInterfaceMAC(this->dMAC, this->sName))
 		crash("Failed to look up the MAC address of interface \"%s\"", this->sName);
 
-	this->hSocket = socket(AF_PACKET, SOCK_RAW, htonl(ETH_P_ALL));
+	this->hSocket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 	if(this->hSocket < 0) crash("Failed to create socket for interface \"%s\"", this->sName);
 
 	if(bind(this->hSocket, (struct sockaddr*)&this->tAddress, sizeof(this->tAddress)))
