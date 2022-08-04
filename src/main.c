@@ -1,6 +1,23 @@
 #include "pcsl-glibc-stub.h"
 #include "linux.h"
 
+typedef struct __attribute__((packed)) {
+	uint8_t dDestinationMAC[6];
+	uint8_t dSourceMAC[6];
+	uint16_t iProtocol;
+} eth2_header_t;
+
+#define ETH_BROADCAST_ADDR ((uint8_t[]){ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff })
+#define MTU (1500 + sizeof(eth2_header_t))
+
+typedef union {
+	uint8_t dData[MTU];
+	struct {
+		eth2_header_t tEthernet;
+		uint8_t dEthernetPayload[MTU - sizeof(eth2_header_t)];
+	};
+} packet_t;
+
 static void _PrintUsage(const char* sPath) {
 	printf("upswitchd " PROGRAM_VERSION_STR "\n");
 	printf("Copyright (C) 2022 Hexalinq <info@hexalinq.com>\n");
@@ -26,6 +43,23 @@ static void _PrintUsage(const char* sPath) {
 	printf("\033[1mUsage: %s <interface-1> <interface-2>\033[0m\n", sPath);
 }
 
+static void* _ForwarderThread(void* pArg) {
+	interface_t* pRX = ((interface_t**)pArg)[0];
+	interface_t* pTX = ((interface_t**)pArg)[1];
+	packet_t uPacket;
+	printf("\"%s\" => \"%s\" ready\n", pRX->sName, pTX->sName);
+	for(;;) {
+		ssize_t iRead = recv(pRX->hSocket, uPacket.dData, MTU, 0);
+		if(iRead <= 0) crash();
+		if(iRead < sizeof(eth2_header_t)) {
+			printf("Invalid packet received at interface \"%s\"\n", pRX->sName);
+			continue;
+		}
+
+		if(send(pTX->hSocket, uPacket.dData, iRead, 0) != iRead) crash();
+	}
+}
+
 int main(int iArgs, char** aArgs) {
 	if(iArgs != 3) {
 		_PrintUsage(aArgs[0]);
@@ -39,6 +73,15 @@ int main(int iArgs, char** aArgs) {
 
 	interface_t* pInterface2 = OpenInterface(aArgs[2]);
 	printf("Interface #2 (%s) file descriptor: %d\n", pInterface2->sName, pInterface2->hSocket);
+
+	interface_t* aDirection1[] = { pInterface1, pInterface2 };
+	interface_t* aDirection2[] = { pInterface2, pInterface1 };
+	pthread_t tThread1;
+	pthread_t tThread2;
+	if(pthread_create(&tThread1, NULL, _ForwarderThread, aDirection1)) crash();
+	if(pthread_create(&tThread2, NULL, _ForwarderThread, aDirection2)) crash();
+	if(pthread_join(tThread1, NULL)) crash();
+	if(pthread_join(tThread2, NULL)) crash();
 
 	CloseInterface(pInterface1);
 	CloseInterface(pInterface2);
