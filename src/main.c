@@ -59,6 +59,9 @@ static void* _ForwarderThread(void* pArg) {
 			continue;
 		}
 
+		if(!memcmp(uPacket.tEthernet.dDestinationMAC, pRX->dMAC, 6)) continue;
+		if(!memcmp(uPacket.tEthernet.dDestinationMAC, pTX->dMAC, 6)) continue;
+
 		if(send(pTX->hSocket, uPacket.dData, iRead, 0) != iRead) crash();
 	}
 }
