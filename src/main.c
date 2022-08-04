@@ -1,4 +1,5 @@
-#include <stdio.h>
+#include "pcsl-glibc-stub.h"
+#include "linux.h"
 
 static void _PrintUsage(const char* sPath) {
 	printf("upswitchd " PROGRAM_VERSION_STR "\n");
@@ -30,6 +31,17 @@ int main(int iArgs, char** aArgs) {
 		_PrintUsage(aArgs[0]);
 		return 1;
 	}
+
+	if(!strcmp(aArgs[1], aArgs[2])) crash("Interface #1 and interface #2 are the same");
+
+	interface_t* pInterface1 = OpenInterface(aArgs[1]);
+	printf("Interface #1 (%s) file descriptor: %d\n", pInterface1->sName, pInterface1->hSocket);
+
+	interface_t* pInterface2 = OpenInterface(aArgs[2]);
+	printf("Interface #2 (%s) file descriptor: %d\n", pInterface2->sName, pInterface2->hSocket);
+
+	CloseInterface(pInterface1);
+	CloseInterface(pInterface2);
 
 	return 0;
 }
