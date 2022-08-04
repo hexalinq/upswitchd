@@ -4,6 +4,7 @@
 typedef struct {
 	int hSocket;
 	char sName[IFNAMSIZ + 1];
+	uint8_t dMAC[6];
 	struct sockaddr_ll tAddress;
 } interface_t;
 

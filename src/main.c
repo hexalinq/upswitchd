@@ -18,6 +18,9 @@ typedef union {
 	};
 } packet_t;
 
+#define MAC_PRINT_FMT "%02x:%02x:%02x:%02x:%02x:%02x"
+#define MAC_PRINT(x) 0[(uint8_t*)x], 1[(uint8_t*)x], 2[(uint8_t*)x], 3[(uint8_t*)x], 4[(uint8_t*)x], 5[(uint8_t*)x]
+
 static void _PrintUsage(const char* sPath) {
 	printf("upswitchd " PROGRAM_VERSION_STR "\n");
 	printf("Copyright (C) 2022 Hexalinq <info@hexalinq.com>\n");
@@ -69,10 +72,16 @@ int main(int iArgs, char** aArgs) {
 	if(!strcmp(aArgs[1], aArgs[2])) crash("Interface #1 and interface #2 are the same");
 
 	interface_t* pInterface1 = OpenInterface(aArgs[1]);
-	printf("Interface #1 (%s) file descriptor: %d\n", pInterface1->sName, pInterface1->hSocket);
+	printf("Interface #1 name: %s\n", pInterface1->sName);
+	printf("Interface #1 file descriptor: %d\n", pInterface1->hSocket);
+	printf("Interface #1 MAC address: " MAC_PRINT_FMT "\n", MAC_PRINT(pInterface1->dMAC));
+	printf("\n");
 
 	interface_t* pInterface2 = OpenInterface(aArgs[2]);
-	printf("Interface #2 (%s) file descriptor: %d\n", pInterface2->sName, pInterface2->hSocket);
+	printf("Interface #2 name: %s\n", pInterface2->sName);
+	printf("Interface #2 file descriptor: %d\n", pInterface2->hSocket);
+	printf("Interface #2 MAC address: " MAC_PRINT_FMT "\n", MAC_PRINT(pInterface2->dMAC));
+	printf("\n");
 
 	interface_t* aDirection1[] = { pInterface1, pInterface2 };
 	interface_t* aDirection2[] = { pInterface2, pInterface1 };

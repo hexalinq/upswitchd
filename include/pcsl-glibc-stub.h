@@ -20,6 +20,7 @@
 #include <linux/if.h>
 #include <linux/if_ether.h>
 #include <linux/if_packet.h>
+#include <linux/if_arp.h>
 #include <net/ethernet.h>
 #include <fcntl.h>
 #include <dlfcn.h>
