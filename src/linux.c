@@ -81,9 +81,9 @@ interface_t* OpenInterface(const char* sInterface) {
 
 	return this;
 
-	error:
-	mmFree(this);
-	return NULL;
+	//error:
+	//mmFree(this);
+	//return NULL;
 }
 
 void CloseInterface(interface_t* this) {

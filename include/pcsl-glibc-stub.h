@@ -95,8 +95,8 @@
 // === pcsl/main.h ===
 typedef int32_t pcsl_error_t;
 
-INLINE int8_t prRaiseOOM(void* pContext) { crash("Out of memory"); }
-INLINE int8_t prRaise(pcsl_error_t iError, void* pContext) { crash(); }
+INLINE int8_t prRaiseOOM(UNUSED_DEF void* pContext) { crash("Out of memory"); }
+INLINE int8_t prRaise(UNUSED_DEF pcsl_error_t iError, UNUSED_DEF void* pContext) { crash(); }
 
 #define PCSL_SUCCESS 0
 

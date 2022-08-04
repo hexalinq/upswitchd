@@ -1,5 +1,5 @@
 GIT_COMMIT_HASH:=$(shell git log --max-count=1 --format="%H")
-CFLAGS:=-Ofast -mtune=native -march=native -DPROGRAM_VERSION_STR="\"git-$(GIT_COMMIT_HASH)\"" -Iinclude/ -D_GNU_SOURCE
+CFLAGS:=-Ofast -mtune=native -march=native -DPROGRAM_VERSION_STR="\"git-$(GIT_COMMIT_HASH)\"" -Iinclude/ -D_GNU_SOURCE -Wall -Wextra -Werror
 LDFLAGS:=
 
 upswitchd: obj/main.o obj/linux.o

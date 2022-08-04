@@ -54,7 +54,7 @@ static void* _ForwarderThread(void* pArg) {
 	for(;;) {
 		ssize_t iRead = recv(pRX->hSocket, uPacket.dData, MTU, 0);
 		if(iRead <= 0) crash();
-		if(iRead < sizeof(eth2_header_t)) {
+		if(iRead < (ssize_t)sizeof(eth2_header_t)) {
 			printf("Invalid packet received at interface \"%s\"\n", pRX->sName);
 			continue;
 		}
